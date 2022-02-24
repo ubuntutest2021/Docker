@@ -1,0 +1,257 @@
+USE [EDNDEPTMASTERS]
+GO
+/****** Object:  StoredProcedure [dbo].[usp_District_Name]    Script Date: 07-05-2021 20:35:02 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create proc [dbo].[usp_District_Name]
+@District_Name varchar(50)
+
+as
+begin 
+
+
+
+ select * from TBL_District_TeacherSchool  where District_Name like @District_Name
+ 
+ 
+  end 
+
+GO
+/****** Object:  StoredProcedure [dbo].[USP_TRAININGDASHBOARD_STATE]    Script Date: 07-05-2021 20:35:02 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[USP_TRAININGDASHBOARD_STATE]
+
+as
+
+BEGIN
+
+-- TABLE 0 - SCHOOLS AND TEACHERS --
+SELECT 'SCHOOLS' as Particulars,SUM(CASE WHEN EDUCATION_LEVEL IN (1,2,3,4,5,6,7,8,10) AND SCHOOL_MANAGEMENT IN (1,2,3,90,4) THEN 1 ELSE 0 END) AS TOTAL_SCHOOLS_TOTAL,
+SUM(CASE WHEN EDUCATION_LEVEL IN (1,2,3,4,5,6,7,8,10) AND SCHOOL_MANAGEMENT IN (1,2,3,90) THEN 1 ELSE 0 END) AS TOTAL_SCHOOLS_GOVT,
+SUM(CASE WHEN EDUCATION_LEVEL IN (1,2,3,4,5,6,7,8,10) AND SCHOOL_MANAGEMENT IN (4) THEN 1 ELSE 0 END) AS TOTAL_SCHOOLS_AIDED,
+SUM(CASE WHEN EDUCATION_LEVEL IN (1,2,3,4,5,6,7) AND SCHOOL_MANAGEMENT IN (1,2,3,90,4) THEN 1 ELSE 0 END) AS PRIMARY_SCHOOLS_TOTAL,
+SUM(CASE WHEN EDUCATION_LEVEL IN (1,2,3,4,5,6,7) AND SCHOOL_MANAGEMENT IN (1,2,3,90) THEN 1 ELSE 0 END) AS PRIMARY_SCHOOLS_GOVT,
+SUM(CASE WHEN EDUCATION_LEVEL IN (1,2,3,4,5,6,7) AND SCHOOL_MANAGEMENT IN (4) THEN 1 ELSE 0 END) AS PRIMARY_SCHOOLS_AIDED,
+SUM(CASE WHEN EDUCATION_LEVEL IN (8,10) AND SCHOOL_MANAGEMENT IN (1,2,3,90,4) THEN 1 ELSE 0 END) AS SECONDARY_SCHOOLS_TOTAL,
+SUM(CASE WHEN EDUCATION_LEVEL IN (8,10) AND SCHOOL_MANAGEMENT IN (1,2,3,90) THEN 1 ELSE 0 END) AS SECONDARY_SCHOOLS_GOVT,
+SUM(CASE WHEN EDUCATION_LEVEL IN (8,10) AND SCHOOL_MANAGEMENT IN (4) THEN 1 ELSE 0 END) AS SECONDARY_SCHOOLS_AIDED
+FROM SCHOOLS_OFFICES
+UNION
+SELECT 'TEACHERS' as Particulars,SUM(CASE WHEN category_type IN (' Govt Primary','Govt Secondary')  THEN 1 ELSE 0 END) AS TOTAL_TEACHERS_TOTAL,
+ SUM(CASE WHEN category_type IN (' Govt Primary','Govt Secondary')  THEN 1 ELSE 0 END) AS TOTAL_TEACHERS_GOVT,
+  '0' AS TOTAL_TEACHERS_AIDED,
+   SUM(CASE WHEN category_type IN (' Govt Primary')  THEN 1 ELSE 0 END) AS PRIMARY_TEACHERS_TOTAL,
+ SUM(CASE WHEN category_type IN (' Govt Primary')  THEN 1 ELSE 0 END) AS PRIMARY_TEACHERS_GOVT,
+ '0' AS PRIMARY_TEACHERS_AIDED,
+    SUM(CASE WHEN category_type IN ('Govt Secondary')  THEN 1 ELSE 0 END) AS SECONDARY_TEACHERS_TOTAL,
+ SUM(CASE WHEN category_type IN ('Govt Secondary')  THEN 1 ELSE 0 END) AS SECONDARY_TEACHERS_GOVT,
+ '0' AS SECONDARY_TEACHERS_AIDED
+FROM TEACHERS
+
+END
+
+-- TABLE 1 -- TRAINING PROGRESS
+
+BEGIN
+
+SELECT        TRAINING_TYPE.TRAINING_NAME, TRAINING_TYPE.TRAINING_CATEGORY,
+SUM(CASE WHEN ACADEMIC_YEAR='2018-19' THEN TARGET ELSE 0 END) AS TARGET_2018,
+SUM(CASE WHEN ACADEMIC_YEAR='2018-19' THEN ACHIEVEMENT ELSE 0 END) AS ACHIEVEMENT_2018,
+SUM(CASE WHEN ACADEMIC_YEAR='2019-20' THEN TARGET ELSE 0 END) AS TARGET_2019,
+SUM(CASE WHEN ACADEMIC_YEAR='2019-20' THEN ACHIEVEMENT ELSE 0 END) AS ACHIEVEMENT_2019,
+SUM(CASE WHEN ACADEMIC_YEAR='2020-21' THEN TARGET ELSE 0 END) AS TARGET_2020,
+SUM(CASE WHEN ACADEMIC_YEAR='2020-21' THEN ACHIEVEMENT ELSE 0 END) AS ACHIEVEMENT_2020
+FROM            TRAINING_TARGET_ACHIEVEMENT INNER JOIN
+ TRAINING_TYPE ON TRAINING_TARGET_ACHIEVEMENT.TRAINING_GROUPID = TRAINING_TYPE.TRAINING_GROUPID
+ GROUP BY  TRAINING_TYPE.TRAINING_NAME, TRAINING_TYPE.TRAINING_CATEGORY
+
+ END
+
+ ---tbl2 Dist School----
+BEGIN
+ SELECT 'hassan' as [District_Name],'500' as [TotalSchools] 
+      ,'200' as[Total_Govt]
+      ,'300' as[TotalAided]
+      ,'1000' as[Primary_Total]
+      ,'100' as[Primary_TotalGovt]
+      ,'600' as[Primary_TotalAided]
+      ,'900' as[Secondary_Total]
+      ,'500' as[Secondary_TotalGovt]
+      ,'400' as[Secondary_TotalAided]
+  FROM [dbo].[TRAINING_TYPE]
+  end
+
+
+
+     ---tbl3 Trsing Prog sub----
+BEGIN
+SELECT 'hassan' as [District_Name]
+      ,'Guruchethana' as [Training_Category] 
+      , '100' as [Target_201819]
+      ,'80' as[Achivement_201819]
+      ,'88' as[Percentage_201819]
+      ,'200' as[Target_201920]
+      ,'100' as[Achivement_201920]
+      ,'50' as[Percentage_201920]
+      ,'300' as[Target_202021]
+      ,'100' as[Achivement_202021]
+      ,'40' as[Percentage_202021]
+ from [dbo].[TRAINING_TYPE]
+ end
+
+ ---tbl4 training center Main----
+
+  begin
+  SELECT 'bang' as [Training_Center]
+      ,' 100' as [Total]
+      ,'kar' as [Sate]
+      ,'dd' as [Division]
+      ,'bang' as[District]
+      ,'B' as[Block]
+      ,'SAC' as[School]
+  from [dbo].[TRAINING_TYPE]
+  end
+
+  ---tbl5 training center Sub----
+    begin
+  SELECT 'BAGALKOTE' as [District_Name]
+      ,'500' as[Total]
+      ,'hassan' as[District]
+      ,'BAG' as[Block]
+      ,'RMS' as[School]
+  from [dbo].[TRAINING_TYPE]
+    end
+
+ ---tbl6 Resource main----
+ begin
+	SELECT 'divya' as [Resource_Persons]
+      ,'100' as [Primary1]
+      ,'100' as[Secondary]
+      ,'Yes' as[Consultans_Experts]
+   from [dbo].[TRAINING_TYPE]
+    end
+
+
+	 ---tbl7 Resource sub----
+ begin
+	SELECT 'BIDAR' as [District_Name]
+      ,'300' as [Primary1]
+      ,'500' as[Secondary]
+      ,'Yes' as[Consultans_Experts]
+   from [dbo].[TRAINING_TYPE]
+    end
+
+
+	 ---tbl8 ModulesTraining Main----
+	 begin
+	SELECT 'Nistha' as [Training_Type]
+      ,'500' as[Total]
+      ,'60' as[Kannada]
+      ,'55' as[English]
+      ,'66' as[Urdu]
+      ,'77' as[Telugu]
+      ,'88' as[Tamil]
+      ,'44' as[Marati]
+  from [dbo].[TRAINING_TYPE]
+  end
+
+   ---tbl9 SubjectTrain Main----
+	 begin
+  SELECT 'PST-Language' as [Teacher_Type]
+      ,'600' as[Target]
+      ,'500' as[Trained]
+      ,'88' as[Percentage]
+	   from [dbo].[TRAINING_TYPE]
+	  end
+
+	  ---tbl10 SubjectTrain sub----
+	 begin
+  SELECT 'CHITRADURGA' as [District_Name]
+      ,'600' as[Target]
+      ,'500' as[Trained]
+      ,'88' as[Percentage]
+	   from [dbo].[TRAINING_TYPE]
+	  end
+
+	   ---tbl11 TEACHER OVERVIEW----
+	    begin
+	  SELECT '2513' as [Teacher_KGIDNo]
+      ,'29010200101' as[SchoolDISECode]
+      ,'SACEVS' as[SchoolName]
+      ,'33' as[Block]
+      ,'hsn' as[District]
+      ,'Govt.' as[SchoolType]
+      ,'mmm' as[ManagementType]
+      ,'Nistha' as[TarainingName]
+      ,'guru' as[ModuleName]
+      ,'25' as[StartDate]
+      ,'26' as[EndDate]
+      ,'y' as[remarks]
+	    from [dbo].[TRAINING_TYPE]
+	  end
+
+	 
+	  ---tbl12 School OVERVIEW----
+	    begin
+	  SELECT '29010200101' as[SchoolDISECode]
+      ,'SACEVS' as[SchoolName]
+      ,'33' as[Block]
+      ,'hsn' as[District]
+      ,'Govt.' as[SchoolType]
+      ,'mmm' as[ManagementType]
+      ,'50' as[TotalSanctionedPost]
+      ,'40' as[TotalWorkingPosition]
+      ,'div' as[TeacherName]
+      ,'kan' as[Subject]
+      ,'y' as[TrainingStatus]
+	    from [dbo].[TRAINING_TYPE]
+	  end
+GO
+/****** Object:  Table [dbo].[TBL_SchoolOverview]    Script Date: 07-05-2021 20:35:02 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[TBL_SchoolOverview](
+	[SchoolDISECode] [nvarchar](50) NULL,
+	[SchoolName] [nvarchar](50) NULL,
+	[Block] [nvarchar](50) NULL,
+	[District] [nvarchar](50) NULL,
+	[SchoolType] [nvarchar](50) NULL,
+	[ManagementType] [nvarchar](50) NULL,
+	[TotalSanctionedPost] [nvarchar](50) NULL,
+	[TotalWorkingPosition] [nvarchar](50) NULL,
+	[TeacherName] [nvarchar](50) NULL,
+	[Subject] [nvarchar](50) NULL,
+	[TrainingStatus] [nvarchar](50) NULL
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[TBL_TeacherOverview]    Script Date: 07-05-2021 20:35:02 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[TBL_TeacherOverview](
+	[Teacher_KGIDNo] [int] NULL,
+	[SchoolDISECode] [nvarchar](50) NULL,
+	[SchoolName] [nvarchar](50) NULL,
+	[Block] [nvarchar](50) NULL,
+	[District] [nvarchar](50) NULL,
+	[SchoolType] [nvarchar](50) NULL,
+	[ManagementType] [nvarchar](50) NULL,
+	[TarainingName] [nvarchar](50) NULL,
+	[ModuleName] [nvarchar](50) NULL,
+	[StartDate] [datetime] NULL,
+	[EndDate] [datetime] NULL,
+	[remarks] [nvarchar](50) NULL
+) ON [PRIMARY]
+
+GO
+INSERT [dbo].[TBL_SchoolOverview] ([SchoolDISECode], [SchoolName], [Block], [District], [SchoolType], [ManagementType], [TotalSanctionedPost], [TotalWorkingPosition], [TeacherName], [Subject], [TrainingStatus]) VALUES (N'29010200101', N'K.H.P.S. ANIGOL', N'bbb', N'ddd', N'priv', N'pr', N'1000', N'200', N'aaa', N'maths', N'processing')
+INSERT [dbo].[TBL_TeacherOverview] ([Teacher_KGIDNo], [SchoolDISECode], [SchoolName], [Block], [District], [SchoolType], [ManagementType], [TarainingName], [ModuleName], [StartDate], [EndDate], [remarks]) VALUES (1234, N'29010200101', N'SACEVS', N'42', N'hsn', N'sstt', N'mmtt', N'ttt', N'mmm', NULL, NULL, N'dsfsdggs')
