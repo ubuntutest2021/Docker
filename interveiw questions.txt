@@ -1,0 +1,493 @@
+Sreenath Nandakumar
+L1 and L2 level Interview questions
+-----------------------------------
+
+1) How to check the performance of a linux machine?
+Ans:top,vmstat,lsof,tcpdump,htop,iotop,iostat
+============================================================================================================================================
+
+2) what is top command and its fields?
+PID: Shows task’s unique process id.
+PR: Stands for priority of the task.
+SHR: Represents the amount of shared memory used by a task.
+VIRT: Total virtual memory used by the task.
+USER: User name of owner of task.
+%CPU: Represents the CPU usage.
+TIME+: CPU Time, the same as ‘TIME’, but reflecting more granularity through hundredths of a second.
+SHR: Represents the Shared Memory size (kb) used by a task.
+NI: Represents a Nice Value of task. A Negative nice value implies higher priority, and positive Nice value means lower priority.
+%MEM: Shows the Memory usage of task.
+=============================================================================================================================================
+3) How to check the mounted filesystems?
+Mount command will be used to see the mounted filesystem.
+=============================================================================================================================================
+4) If disk space is full, what will you do ?
+df -h command will be used to check the diskspace.
+
+differenec between df and du
+The (very complicated) answer can be best summarized like this: 
+The df command provides a sweeping ballpark figure for how much space is being utilized on your filesystem as a whole. 
+The du command is a much more accurate snapshot of a given directory or subdirectory
+==============================================================================================================================================
+5) If df commands is hanging , what will you do?
+using strace command, we can trace which filesystem is giving problem. 
+==============================================================================================================================================
+6) what is multipath?
+Device Mapper Multipathing (or DM-multipathing) is a Linux native multipath tool, 
+which allows you to configure multiple I/O paths between server nodes and storage arrays into a single device. 
+These I/O paths are physical SAN connections that can include separate cables, switches, and controllers.
+==============================================================================================================================================
+7) How to scan new disks?
+Find out how many host bus adapter configured in the Linux box.you can use “systool -fc_host -v” to verify available FC in the system.
+# ls /sys/class/fc_host
+host0  host1
+
+# echo "1" > /sys/class/fc_host/host0/issue_lip
+# echo "- - -" > /sys/class/scsi_host/host0/scan
+# echo "1" > /sys/class/fc_host/host1/issue_lip
+# echo "- - -" > /sys/class/scsi_host/host1/scan
+
+Find out how many SCSI controller configured.
+
+# ls /sys/class/scsi_host/host
+host0 host1 host2
+
+Scan the SCSI disks using below command.
+
+[root@mylinz1 ~]# echo "- - -" > /sys/class/scsi_host/host0/scan
+[root@mylinz1 ~]# echo "- - -" > /sys/class/scsi_host/host1/scan
+[root@mylinz1 ~]# echo "- - -" > /sys/class/scsi_host/host2/scan
+=================================================================================================================================================
+8) what is patching ?
+What are patches? Patches are software and operating system (OS) updates that address security vulnerabilities within a program or product. 
+Software vendors may choose to release updates to fix performance bugs, as well as to provide enhanced security features.
+==================================================================================================================================================
+9) How to check kernel version of a machine ?
+hostnamectl | grep -i kernel
+uname -r
+
+10)If you get a request to remove the file , what will you do ?
+=================================================================================================================================================
+11)what is cron and how to set it?
+The Cron daemon is a built-in Linux utility that runs processes on your system at a scheduled time. 
+Cron reads the crontab (cron tables) for predefined commands and scripts. 
+By using a specific syntax, you can configure a cron job to schedule scripts or other commands to run automatically.
+==================================================================================================================================================
+12)what all are the fields in cron?
+Linux Crontab Format
+Field	Description	Allowed Value
+MIN	Minute field	0 to 59
+HOUR	Hour field	0 to 23
+DOM	Day of Month	1-31
+MON	Month field	1-12
+==================================================================================================================================================
+13)most critical challenge you have faced and how did you resolve it?
+==================================================================================================================================================
+14)How will you prioritise the servers while monitoring the servers?
+==================================================================================================================================================
+15)what is the ticketing tool you are familiar with ?
+==================================================================================================================================================
+16)which monitoring tool you have used to monitor the servers?
+==================================================================================================================================================
+17)what is LVM and how to configure it?
+LVM stands for Logical Volume Manager. LVM is the modern way to manage the storage devices. 
+Traditionally a hard disk is partitioned as per requirement and each partition is formatted with supported file system. 
+We have already learned this approach in detail with examples in previous parts of this article.
+
+four Primary partitions
+Extended Partitions
+While in most circumstances, such as a "Guided Install" from the Live CD on a new Windows computer, four partitions are enough, there are circumstances in which you might need to create more than four partitions. This is the reason for an Extended partition.
+
+An Extended partition is a special type of partition that contains "Free Space" in which more than the four Primary partitions can be created. Partitions created within the Extended partition are called Logical partitions, and any number of Logical partitions can be created within an Extended partition. The following conventions apply to Extended partitions:
+
+When you create an Extended partition, it occupies one of the four Primary partition spots. When an Extended partition exists on a hard drive, only three Primary partitions may co-exist with it. (See Primary Partitions Rules and Conventions) If there are four Primary partitions already on a hard drive and you wish to create an Extended partition in which to create more, one of the Primary partitions must be deleted in order to create it.
+Only one extended partition may be created on a hard drive (though you can have one extended partition on each of the hard drives connected to your system). The partition editor will not allow it, and it would serve no purpose at any rate. If you need the extra Extended partition space, you only need expand the one you have.
+
+An Extended partition cannot be formatted with a filesystem, such as ext4, FAT, or NTFS, nor can it directly hold data. That is the function of the Logical Drives which are created within it.
+
+Run fdisk /dev/sdd command to initiate fdisk utility.
+Type n and press Enter key to create new partition.
+Since logical partition can be created only in extended partition, we have to create extended partition first. Type e and press Enter key to create to extended partition.
+Type 4 and press Enter key to put the extended partition in last at partition table.
+Press Enter key to keep the default starting sector.
+Type +1G and press Enter key to assign 1GiB space in this partition.
+Type n again to create logical partition
+Keep default logical partition number
+Keep default starting sector and press Enter key
+Keep default ending sector to assign all space in this partition and press Enter key
+Type t and press Enter key
+Type partition number which partition type we want to change
+Type 8e and press Enter key
+Type w to save the change and exit from fdisk
+
+Creating 1GiB LVM partition with gdisk command
+Create a 1GiB GPT partition and set its type to LVM with following command
+
+=================================================================================================================================================================================================================================================================================================================================================
+18)How to increase a Filesystem?
+lvextend -l +4607 /dev/vg_tecmint/LogVol01
+resize2fs /dev/vg_tecmint/LogVol01
+
+How to reduce the filesystem?
+Let’s wee what are the 5 steps below.
+
+unmount the file system for reducing.
+Check the file system after unmount.
+Reduce the file system.
+Reduce the Logical Volume size than Current size.
+Recheck the file system for error.
+Remount the file-system back to stage.
+
+umount -v /mnt/tecmint_reduce_test/
+e2fsck -ff /dev/vg_tecmint_extra/tecmint_reduce_test
+resize2fs /dev/vg_tecmint_extra/tecmint_reduce_test 10GB
+lvreduce -L -8G /dev/vg_tecmint_extra/tecmint_reduce_test
+lvdisplay vg_tecmint_extra
+lvreduce -l -2048 /dev/vg_tecmint_extra/tecmint_reduce_test
+resize2fs /dev/vg_tecmint_extra/tecmint_reduce_test
+mount /dev/vg_tecmint_extra/tecmint_reduce_test /mnt/tecmint_reduce_test/
+lvdisplay vg_tecmint_extra
+=================================================================================================================================================================================================
+19)How to set hostname ?
+we can change the hostname on fly using hostnamectl command.
+View the current hostname    ---  #hostnamectl status
+Set the hostname using the following commands. One for static hostname and other for pretty hostname.-------------  #hostnamectl set-hostname [your-hostname-here]
+=================================================================================================================================================================================================
+20)what is selinux ?
+Security-Enhanced Linux (SELinux) is a security architecture for Linux® systems that allows administrators to have more control over who can access the system.
+SELinux Basics
+First off, a quick overview of the three different SELinux modes. SELinux can be in enforcing, permissive, or disabled mode.
+
+Enforcing:
+This is the default. In enforcing mode, if something happens on the system that is against the defined policy, the action will be both blocked and logged.
+
+Permissive:
+This mode will not actually block or deny anything from happening, however it will log anything that would have normally been blocked in enforcing mode. 
+It’s a good mode to use if you perhaps want to test a Linux system that has never used SELinux and you want to get an idea of any problems you may have. 
+No system reboot is needed when swapping between permissive and enforcing modes.
+
+Disabled:
+Disabled is completely turned off, nothing is logged at all. 
+In order to swap to the disabled mode, a system reboot will be required. Additionally if you are switching from disabled mode to either permissive or enforcing modes a system reboot will also be required.
+
+
+View Current SELinux Status
+As mentioned CentOS/RHEL use SELinux in enforcing mode by default, there are a few ways that we can check and confirm this. My favourites are with the ‘getenforce’ and ‘sestatus’ commands.
+[root@centos7 ~]# getenforce
+Enforcing
+[root@centos7 ~]# sestatus
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Max kernel policy version:      28
+
+Change SELinux Mode
+There are also many ways that we can change the mode of SELinux, with both runtime only options or permanent settings that persist on reboot.
+SELinux Runtime Configuration
+One of the fastest ways to switch between enforcing and permissive modes is with the ‘setenforce’ command. We can use ‘setenforce 0’ to swap to permissive mode, or ‘setenforce 1’ to swap to enforcing mode.
+[root@centos7 ~]# getenforce
+Enforcing
+[root@centos7 ~]# setenforce 0
+[root@centos7 ~]# getenforce
+Permissive
+[root@centos7 ~]# setenforce 1
+[root@centos7 ~]# getenforce
+Enforcing
+============================================================================================================================================================================================================
+
+21)what is iptables ?
+
+ iptables is a firewall program for Linux. It will monitor traffic from and to your server using tables. These tables contain sets of rules, called chains, that will filter incoming and outgoing data packets
+
+============================================================================================================================================================================================================
+22)what is the port number for http,https,ssh,telnet,nfs?
+Protocol	Common Port
+FTP (File Transfer Protocol)	20, 21
+SSH (Secure Shell)	22
+Telnet	23
+SMTP (Simple Mail Transfer Protocol)	25
+DNS (Domain Name Service)	53
+TFTP (Trivial File Transfer Protocol)	69
+HTTP (Hypertext Transfer Protocol)	80
+POP3 (Post Office Protocol version 3)	110
+NNTP (Network News Transport Protocol)	119
+NTP (Network Time Protocol)	123
+IMAP4 (Internet Message Access Protocol version 4)	143
+HTTPS (Hypertext Transfer Protocol Secure)	443
+NFS -  2049
+Allow TCP and UDP port 2049 for NFS. Allow TCP and UDP port 111 ( rpcbind / sunrpc ).
+
+===================================================================================================================================================================================
+23)what is a kernel?
+Kernel is central component of an operating system that manages operations of computer and hardware. It basically manages operations of memory and CPU time. 
+It is core component of an operating system. ... It basically acts as an interface between user applications and hardware.
+==================================================================================================================================================================================
+24)Which is the latest rhel kernel now ?
+RHEL 7.9	2020-09-29	2020-09-29 RHBA-2020:3849	3.10.0-1160
+==================================================================================================================================================================================
+25)what all are the possible reasons if you are not able to connect to a server over a particular port ?
+"telnet <IP ADDRESS OF SERVER PC> <PORT>" 
+===================================================================================================================================================================================
+26)What is umask ? what will be the default value?
+When user create a file or directory under Linux or UNIX, she create it with a default set of permissions. 
+In most case the system defaults may be open or relaxed for file sharing purpose. For example, if a text file has 666 permissions, it grants read and write permission to everyone. 
+Similarly a directory with 777 permissions, grants read, write, and execute permission to everyone.
+
+Explain Octal umask Mode 022 And 002
+As I said earlier, if the default settings are not changed, files are created with the access mode 666 and directories with 777. In this example:
+
+The default umask 002 used for normal user. With this mask default directory permissions are 775 and default file permissions are 664.
+The default umask for the root user is 022 result into default directory permissions are 755 and default file permissions are 644.
+For directories, the base permissions are (rwxrwxrwx) 0777 and for files they are 0666 (rw-rw-rw).
+In short,
+
+A umask of 022 allows only you to write data, but anyone can read data.
+A umask of 077 is good for a completely private system. No other user can read or write your data if umask is set to 077.
+A umask of 002 is good when you share data with other users in the same group. Members of your group can create and modify data files; those outside your group can read data file, but cannot modify it. 
+Set your umask to 007 to completely exclude users who are not group members.
+===============================================================================================================================================================================================================
+27)what is raid concept in linux? various types of raid ?
+What is RAID?
+RAID levels 0, 1, 2, 3, 4, 5, 6, 0+1, 1+0 features explained in detailRAID stands for Redundant Array of Inexpensive Disks which was later interpreted to Redundant Array of Independent Disks. 
+This technology is now used in almost all the IT organizations looking for data redundancy and better performance. 
+It combines multiple available disks into 1 or more logical drive and gives you the ability to survive one or more drive failures depending upon the RAID level used.
+
+•RAID 0 is used to boost a server's performance. It's also known as "disk striping." With RAID 0, data is written across multiple disks. 
+This means the work that the computer is doing is handled by multiple disks rather than just one, increasing performance because multiple drives are reading and writing data, improving disk I/O. A minimum of two disks is required. 
+Both software and hardware RAID support RAID 0, as do most controllers. The downside is that there is no fault tolerance. If one disk fails, then that affects the entire array and the chances for data loss or corruption increases.
+
+•RAID 1 is a fault-tolerance configuration known as "disk mirroring." With RAID 1, data is copied seamlessly and simultaneously, from one disk to another, creating a replica, or mirror. 
+If one disk gets fried, the other can keep working. It's the simplest way to implement fault tolerance and it's relatively low cost.
+
+The downside is that RAID 1 causes a slight drag on performance. RAID 1 can be implemented through either software or hardware. 
+A minimum of two disks is required for RAID 1 hardware implementations. With software RAID 1, instead of two physical disks, data can be mirrored between volumes on a single disk. 
+One additional point to remember is that RAID 1 cuts total disk capacity in half: If a server with two 1TB drives is configured with RAID 1, then total storage capacity will be 1TB not 2TB.
+
+•RAID 5 is by far the most common RAID configuration for business servers and enterprise NAS devices. 
+This RAID level provides better performance than mirroring as well as fault tolerance. With RAID 5, data and parity (which is additional data used for recovery) are striped across three or more disks. 
+If a disk gets an error or starts to fail, data is recreated from this distributed data and parity block— seamlessly and automatically. 
+Essentially, the system is still operational even when one disk kicks the bucket and until you can replace the failed drive. 
+Another benefit of RAID 5 is that it allows many NAS and server drives to be "hot-swappable" meaning in case a drive in the array fails, that drive can be swapped with a new drive without shutting down the server or NAS and without having to interrupt users who may be accessing the server or NAS. It's a great solution for fault tolerance because as drives fail (and they eventually will), the data can be rebuilt to new disks as failing disks are replaced. The downside to RAID 5 is the performance hit to servers that perform a lot of write operations. For example, with RAID 5 on a server that has a database that many employees access in a workday, there could be noticeable lag.
+
+•RAID 6 is also used frequently in enterprises. It's identical to RAID 5, except it's an even more robust solution because it uses one more parity block than RAID 5. 
+You can have two disks die and still have a system be operational.
+
+•RAID 10 is a combination of RAID 1 and 0 and is often denoted as RAID 1+0. 
+It combines the mirroring of RAID 1 with the striping of RAID 0. It's the RAID level that gives the best performance, but it is also costly, requiring twice as many disks as other RAID levels, for a minimum of four. 
+This is the RAID level ideal for highly utilized database servers or any server that's performing many write operations. 
+RAID 10 can be implemented as hardware or software, but the general consensus is that many of the performance advantages are lost when you use software RAID 10.
+
+Other RAID Levels There are other RAID levels: 2, 3, 4, 7, 0+1...but they are really variants of the main RAID configurations already mentioned, and they're used for specific cases. Here are some short descriptions of each:
+
+•RAID 2 is similar to RAID 5, but instead of disk striping using parity, striping occurs at the bit-level. RAID 2 is seldom deployed because costs to implement are usually prohibitive (a typical setup requires 10 disks) and gives poor performance with some disk I/O operations.
+
+•RAID 3 is also similar to RAID 5, except this solution requires a dedicated parity drive. RAID 3 is seldom used except in the most specialized database or processing environments, which can benefit from it.
+
+•RAID 4 is a configuration in which disk striping happens at the byte level, rather than at the bit-level as in RAID 3.
+
+•RAID 7 is a proprietary level of RAID owned by the now-defunct Storage Computer Corporation.
+
+•RAID 0+1 is often interchanged for RAID 10 (which is RAID 1+0), but the two are not same. RAID 0+1 is a mirrored array with segments that are RAID 0 arrays. It's implemented in specific infrastructures requiring high performance but not a high level of scalability.
+
+====================================================================================================================================================================================================================================================================================
+28)What is an ntp server ? how to configure it ?
+NTP stands for Network Time Protocol. 
+It is used to synchronize the time on your Linux system with a centralized NTP server. 
+A local NTP server on the network can be synchronized with an external timing source to keep all the servers in your organization in-sync with an accurate time.
+
+The ntpstat command will report the synchronisation state of the NTP daemon running on the local machine. 
+If the local system is found to be synchronised to a reference time source, ntpstat will report the approximate time accuracy.
+Checking the status of NTP with ntpq command  -   #ntpq -p
+
+=========================================================================================================================================================================================================================================
+29)what is ip aliasing ? how to configure ip aliases.
+IP aliasing is associating more than one IP address to a network interface. With this, one node on a network can have multiple connections to a network, each serving a different purpose. ... 
+IP aliasing can be used to provide multiple network addresses on a single physical interface.
+
+Main advantage of using IP aliasing is that we don’t need multiple NICs to configure multiple IPs, hence saving us cost & configuration time. IP aliasing is most useful when using Apache IP based virtual hosting.
+
+Manual Method
+For this method, we will manually create the necessary files needed. 
+We will assign two different IPs in addition to the one we have already assigned to our interface  ‘ifcfg-en0s0’. 
+To create IP alias, we are going to use our default network interface file & 
+then will create two copies of the file with names 'ifcfg-en0s0:1' & 'ifcfg-en0s0:2'
+
+$  cd /etc/sysconfig/network-scripts
+$ cp ifcfg-en0s0 ifcfg-en0s0:1
+$ cp ifcfg-en0s0 ifcfg-en0s0:2
+
+Now, let’s open primary network interface i.e. eth0, & see its content
+
+$ vi ifcfg-en0s0
+
+DEVICE="en0s0"
+BOOTPROTO=static
+ONBOOT=yes
+TYPE="Ethernet"
+IPADDR=192.168.1.100
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+HWADDR=32:0A:21:54:ND:6D
+
+We will now configure our other network interfaces, we only need to make changes for ‘DEVICE’ & ‘IPADDR’  for aliasing
+
+$ vi ifcfg-en0s0:1
+
+DEVICE="en0s0:1"
+BOOTPROTO=static
+ONBOOT=yes
+TYPE="Ethernet"
+IPADDR=192.168.1.110
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+HWADDR=32:0A:21:54:ND:6D
+
+& same is to be done for ‘ifcfg:eth0:2’
+
+$ vi ifcfg-en0s0:2
+
+DEVICE="en0s0:2"
+BOOTPROTO=static
+ONBOOT=yes
+TYPE="Ethernet"
+IPADDR=192.168.1.120
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+HWADDR=32:0A:21:54:ND:6D
+
+Save both files & restart the network service for changes to take effect.
+
+$ systemctl restart network
+
+To check IP addresses have bee assigned or not, run ‘ifconfig’
+
+$ ifconfig
+
+===============================================================================================================================================================
+30)How to configure yum
+
+How To Set Up and Use Yum Repositories on a CentOS 6 VPS
+CentOSSystem Tools
+By Mitja Resman
+
+PostedOctober 1, 2013 1 version 1.1mviews
+Introduction
+YUM Repositories are warehouses of Linux software (RPM package files). 
+RPM package file is a Red Hat Package Manager file and enables quick and easy software installation on Red Hat/CentOS Linux. 
+YUM Repositories hold a number of RPM package files and enable download and installation of new software on our VPS. 
+YUM Repositories can hold RPM package files locally (local disk) or remotely (FTP, HTTP or HTTPS). 
+YUM Configuration files hold the information required to successfully find and install software (RPM packages files) on our VPS.
+
+YUM Repository Configuration File
+We can install new software on Red Hat/CentOS Linux with "yum install packagename" command from console.
+ Running this command first checks for existing YUM Repository configuration files in /etc/yum.repos.d/ directory. 
+It reads each YUM Repository configuration file to get the information required to download and install new software, 
+resolves software dependencies and installs the required RPM package files.
+
+YUM Repository configuration files must:
+
+be located in /etc/yum.repos.d/ directory
+have .repo extension, to be recognized by YUM
+Available YUM Repository configuration file options are:
+
+Repository ID - One word unique repository ID (example: [examplerepo])
+Name - Human readable name of the repository (example: name=Example Repository)
+Baseurl - URL to the repodata directory. You can use file://path if repository is located locally or ftp://link, http://link, https://link if repository is located remotely - HTTP Authentication available http://user:password@www.repo1.com/repo1 (example: baseurl=http://mirror.cisp.com/CentOS/6/os/i386/)
+Enabled - Enable repository when performing updates and installs (example: enabled=1)
+Gpgcheck - Enable/disable GPG signature checking (example: gpgcheck=1)
+Gpgkey - URL to the GPG key (example: gpgkey=http://mirror.cisp.com/CentOS/6/os/i386/RPM-GPG-KEY-CentOS-6)
+Exclude - List of the packages to exclude (example: exclude=httpd,mod_ssl)
+Includepkgs - List of the packages to include (example: include=kernel)
+Required YUM Repository configuration file options are:
+
+Repository ID
+Name
+Baseurl
+Enabled
+Step 1: Create YUM Repository configuration file
+Use your favorite console text editor and create a new YUM Repository configuration file with .repo extension in /etc/yum.repos.d/ directory. To create a new file with "vi editor" run the following command from console:
+
+vi /etc/yum.repos.d/example.repo
+Step 2: Insert YUM Repository options
+Insert the desired YUM Repository options to the newly created YUM Repository configuration file and save changes.
+
+Example YUM Repository Configuration file:
+/etc/yum.repos.d/example.repo
+
+[examplerepo]
+name=Example Repository
+baseurl=http://mirror.cisp.com/CentOS/6/os/i386/
+enabled=1
+gpgcheck=1
+gpgkey=http://mirror.cisp.com/CentOS/6/os/i386/RPM-GPG-KEY-CentOS-6
+CentOS DVD ISO YUM Repository
+CentOS DVD ISO holds a large number of software (RPM package files) which are available for installation during Red Hat/CentOS installation wizard. We can also use RPM package files from CentOS DVD ISO to create CentOS DVD ISO YUM Repository. This way we can install all of the software available on CentOS DVD ISO with "yum install packagename" command from VPS console even after we have completed Red Hat/CentOS installation wizard.
+
+Step 1: Download/Transfer CentOS DVD ISO
+CentOS DVD ISO files are available for download at http://mirror.centos.org/. We need to download or transfer CentOS DVD ISO to our VPS:
+
+Transfer - If we have already downloaded CentOS DVD ISO to a machine different than our VPS, we will need to transfer it from our machine to our cloud server via FTP or SSH. We can do this with software like WinSCP (free SFTP client and FTP) or similar.
+Download - We can download CentOS DVD ISO directly to our VPS with "wget" command from console (please change HTTP link accordingly):
+wget http://mirror.lihnidos.org/CentOS/6.4/isos/i386/CentOS-6.4-i386-LiveDVD.iso
+Step 2: Mount CentOS DVD ISO
+To view the CentOS DVD ISO data, we first need to mount it on desired location. We usually mount CD-ROM, USB devices or ISO files to /mnt directory (if free to use). To mount CentOS DVD ISO run the following command from console (please change /path/to/iso and /mnt accordingly):
+
+mount -o loop /path/to/iso /mnt
+Step 3: Create YUM Repository Configuration file
+To start using the newly created Custom YUM Repository we must create YUM Repository Configuration file with .repo extension, which must be placed to /etc/yum.repos.d/ directory. Instructions to create YUM Repository Configuration file are covered in the first topic of this article called "YUM Repository Configuration File".
+
+Example CentOS DVD ISO YUM Repository Configuration file:
+/etc/yum.repos.d/centosdvdiso.repo
+
+[centosdvdiso]
+name=CentOS DVD ISO
+baseurl=file:///mnt
+enabled=1
+gpgcheck=1
+gpgkey=file:///mnt/RPM-GPG-KEY-CentOS-6
+Custom YUM Repository
+Sometimes we need to create a Custom YUM Repository (handy when the VPS has no internet connection). We can create a Custom YUM Repository from a desired number of selected RPM package files. Custom YUM Repository only holds the RPM package files we want to include in.
+
+Step 1: Install "createrepo"
+To create Custom YUM Repository we need to install additional software called "createrepo" on our cloud server. We can install "createrepo" by running the following command from console:
+
+yum install createrepo
+Step 2: Create Repository directory
+We need to create a new directory that will be the location of our Custom YUM Repository and will hold the desired RPM package files. We can do this with the following command from console (choose a different /repository1 directory name if you like):
+
+mkdir /repository1
+Step 3: Put RPM files to Repository directory
+If RPM package files are not yet present on our VPS we need to transfer them to our cloud server via FTP or SSH - use software like WinSCP (free SFTP client and FTP) or similar. We can also download RPM package files directly to our VPS (internet connection needed) with "wget" command from console (please change HTTP link accordingly):
+
+wget http://mirror.lihnidos.org/CentOS/6/os/i386/Packages/NetworkManager-0.8.1-43.el6.i686.rpm
+If RPM files are already present on our VPS, we need to Copy or Move these files to the newly created directory from "Step 2". We can move RPM files with the following command from console (please change /path/to/rpm and /repository1 accordingly):
+
+mv /path/to/rpm /repository1
+We can copy RPM files with the following command from console (please change /path/to/rpm and /repository1 accordingly):
+
+cp /path/to/rpm /repository1
+Step 4: Run "createrepo"
+Createrepo command reads through Custom YUM Repository directory from "Step 2" and creates a new directory called "repodata" in it. Repodata directory holds the metadata information for the newly created repository. Every time we add additional RPM package files to our Custom YUM Repository, we need to re-create Repository metadata with "createrepo" command. We can create new repository metadata by running the following command from console (please change /repository1 accordingly):
+
+createrepo /repository1
+Step 5: Create YUM Repository Configuration file
+To start using the newly created Custom YUM Repository, we must create the corresponding YUM Repository Configuration file with .repo extension, which must be placed to /etc/yum.repos.d/ directory. Instructions to create YUM Repository Configuration file are covered in the first topic of this article called "YUM Repository Configuration File".
+
+Example Custom YUM Repository Configuration file:
+/etc/yum.repos.d/custom.repo
+
+[customrepo]
+name=Custom Repository
+baseurl=file:///repository1/
+enabled=1
+gpgcheck=0
+
+=================================================================================================================================================================
+Apart from the above questions, we ask the questions based on their skills and daily activities they expertised in.
+
+
